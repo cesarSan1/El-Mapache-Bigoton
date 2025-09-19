@@ -1,0 +1,42 @@
+CREATE DATABASE MapacheBigotonBD
+Use MapacheBigotonBD
+
+CREATE TABLE CLIENTE (
+    idCliente INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20)
+);
+
+CREATE TABLE SERVICIO (
+    idServicio INT AUTO_INCREMENT PRIMARY KEY,
+    servicio VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    costo DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE AGENDA (
+    idAgenda INT AUTO_INCREMENT PRIMARY KEY,
+    anio INT NOT NULL,
+    mes INT NOT NULL
+);
+
+CREATE TABLE CITA (
+    idCita INT AUTO_INCREMENT PRIMARY KEY,
+    nombreCliente INT NOT NULL,
+    fecha DATE NOT NULL,
+    hora TIME NOT NULL,
+    idServicio INT NOT NULL,
+    idAgenda INT NOT NULL,
+    FOREIGN KEY (nombreCliente) REFERENCES CLIENTE(idCliente),
+    FOREIGN KEY (idServicio) REFERENCES SERVICIO(idServicio),
+    FOREIGN KEY (idAgenda) REFERENCES AGENDA(idAgenda)
+);
+
+CREATE TABLE USUARIO (
+	idUsuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(35),
+    contrasenia VARCHAR(30)
+);
+
+
+
