@@ -39,7 +39,12 @@ public class CitaController {
         return ResponseEntity.created(uri).build();
     }
 
+<<<<<<< HEAD
     @PutMapping("/{idCita}")
+=======
+
+        @PutMapping("/{idCita}")
+>>>>>>> ed4d0a1 (Commit de Cesar)
     public ResponseEntity<Void> update(@PathVariable Long idCita, @RequestBody Cita citaAct) {
         Optional<Cita> optionalCita = citaRepository.findById(idCita);
 
