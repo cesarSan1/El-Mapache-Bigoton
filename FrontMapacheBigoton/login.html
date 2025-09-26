@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background: #f4f4f4;
+    }
+
+    .login-container {
+      display: flex;
+      width: 800px;
+      height: 500px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    /* Lado izquierdo: formulario */
+    .login-form {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-form h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .login-form label {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .login-form input {
+      margin-top: 5px;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+      width: 100%;
+    }
+
+    .login-form button {
+      margin-top: 20px;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #333;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .login-form button:hover {
+      background: #555;
+    }
+
+    /* Lado derecho: imagen */
+    .login-image {
+      flex: 1;
+      background: url("https://picsum.photos/600/500") no-repeat center center;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <!-- Lado izquierdo -->
+    <div class="login-form">
+      <h2>Iniciar Sesión</h2>
+      <form>
+        <label for="username">Usuario</label>
+        <input type="text" id="username" name="username">
+
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password">
+
+        <a href="principal.html">
+            <button type="button">Iniciar Sesión</button>
+        </a>
+        <button type="button">Registrarse</button>
+      </form>
+    </div>
+    <!-- Lado derecho -->
+    <div class="login-image"></div>
+  </div>
+</body>
+</html>

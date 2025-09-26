@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mapache bigotón</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!--Barra lateral-->
+  <aside class="sidebar">
+    <nav>
+      <ul>
+        <li><a href="principal.html">Dashboard</a></li>
+        <li><a href="agendas.html">Agendas</a></li>
+        <li><a href="citas.html">Citas</a></li>
+        <li><a href="servicios.html">Servicios</a></li>
+        <li><a href="clientes.html">Clientes</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+      <div class="topbar">
+    <h1>MAPACHE BIGOTÓN</h1>
+    <div class="user-menu">
+      <div class="user-info" id="user-info">
+        <span id="user-name">Usuario</span>👤
+      </div>
+      <ul class="dropdown" id="dropdown-menu">
+        <li><a href="#">Mi perfil</a></li>
+        <li><a href="#">Configuración</a></li>
+        <li><a href="login.html">Cerrar sesión</a></li>
+      </ul>
+    </div>
+  </div>
+    </header>
+
+    <!-- Cuadros de métricas -->
+    <section class="cards">
+      <div class="card">
+        <h3>Citas</h3>
+        <p>0</p>
+      </div>
+      <div class="card">
+        <h3>Barberos</h3>
+        <p>0</p>
+      </div>
+      <div class="card">
+        <h3>Clientes Registrados</h3>
+        <p>0</p>
+      </div>
+    </section>
+
+    <!-- Tabla -->
+    <section class="table-section">
+      <h2>Registros</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Detalle</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody id="data-table">
+          <!-- Aquí se llenará con el backend -->
+        </tbody>
+      </table>
+    </section>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const userInfo = document.getElementById("user-info");
+      const dropdown = document.getElementById("dropdown-menu");
+
+      if (!userInfo || !dropdown) {
+        console.error("No se encontraron los elementos del menú");
+        return;
+      }
+
+      userInfo.addEventListener("click", (e) => {
+        e.stopPropagation(); // evita que se cierre inmediatamente
+        dropdown.classList.toggle("show");
+      });
+
+      document.addEventListener("click", () => {
+        dropdown.classList.remove("show");
+      });
+    });
+  </script>
+</body>
+</html>

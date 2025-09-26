@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agendas</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Botón flotante */
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #007BFF;
+      color: white;
+      font-size: 32px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: background 0.3s;
+      z-index: 150;
+    }
+
+    .fab:hover {
+      background: #0056b3;
+    }
+
+    /* Modal */
+    .modal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .modal-content input {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .modal-content button {
+      margin-top: 20px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #007BFF;
+      color: white;
+      font-size: 16px;
+    }
+
+    .close-btn {
+      background: red;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!--Barra lateral-->
+  <aside class="sidebar">
+    <nav>
+      <ul>
+        <li><a href="principal.html">Dashboard</a></li>
+        <li><a href="agendas.html">Agendas</a></li>
+        <li><a href="citas.html">Citas</a></li>
+        <li><a href="servicios.html">Servicios</a></li>
+        <li><a href="clientes.html">Clientes</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <div class="topbar">
+      <h1>MAPACHE BIGOTÓN</h1>
+      <div class="user-menu">
+        <div class="user-info" id="user-info">
+          <span id="user-name">Usuario</span>👤
+        </div>
+        <ul class="dropdown" id="dropdown-menu">
+          <li><a href="#">Mi perfil</a></li>
+          <li><a href="#">Configuración</a></li>
+          <li><a href="login.html">Cerrar sesión</a></li>
+        </ul>
+      </div>
+    </div>
+    </header>
+
+    <!-- Tabla -->
+    <section class="table-section">
+      <h2>Agendas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Año</th>
+            <th>Mes</th>
+          </tr>
+        </thead>
+        <tbody id="data-table">
+          <!-- Aquí se llenará con el backend -->
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- Botón flotante -->
+  <button class="fab" id="openModal">+</button>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3>Nueva Agenda</h3>
+      <form>
+        <input type="date">
+        <button type="submit">Guardar</button>
+        <button type="button" class="close-btn" id="closeModal">Cerrar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const userInfo = document.getElementById("user-info");
+      const dropdown = document.getElementById("dropdown-menu");
+
+      if (userInfo && dropdown) {
+        userInfo.addEventListener("click", (e) => {
+          e.stopPropagation();
+          dropdown.classList.toggle("show");
+        });
+
+        document.addEventListener("click", () => {
+          dropdown.classList.remove("show");
+        });
+      }
+
+      // Modal
+      const openModal = document.getElementById("openModal");
+      const modal = document.getElementById("modal");
+      const closeModal = document.getElementById("closeModal");
+
+      openModal.addEventListener("click", () => {
+        modal.style.display = "flex";
+      });
+
+      closeModal.addEventListener("click", () => {
+        modal.style.display = "none";
+      });
+
+      window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
