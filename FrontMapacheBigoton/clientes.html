@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Clientes</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Dropdown */
+    .dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 40px;
+      background: white;
+      list-style: none;
+      padding: 10px;
+      margin: 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .dropdown.show {
+      display: block;
+    }
+    .user-menu {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    /* Botón flotante */
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: background 0.3s;
+      z-index: 1000;
+    }
+    .fab:hover {
+      background-color: #0056b3;
+    }
+
+    /* Modal */
+    .modal {
+      display: none; /* oculto por defecto */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .modal input {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .modal button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .close-btn {
+      background: red;
+      color: white;
+      float: right;
+    }
+    .save-btn {
+      background: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra lateral -->
+  <aside class="sidebar">
+    <nav>
+      <ul>
+        <li><a href="principal.html">Dashboard</a></li>
+        <li><a href="agendas.html">Agendas</a></li>
+        <li><a href="citas.html">Citas</a></li>
+        <li><a href="servicios.html">Servicios</a></li>
+        <li><a href="clientes.html">Clientes</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <div class="topbar">
+      <h1>MAPACHE BIGOTÓN</h1>
+      <div class="user-menu">
+        <div class="user-info" id="user-info">
+          <span id="user-name">Usuario</span> 👤
+        </div>
+        <ul class="dropdown" id="dropdown-menu">
+          <li><a href="#">Mi perfil</a></li>
+          <li><a href="#">Configuración</a></li>
+          <li><a href="login.html">Cerrar sesión</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <section class="table-section" id="table-clientes">
+      <h2>Clientes</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Télefono</th>
+          </tr>
+        </thead>
+        <tbody id="data-table">
+          <!-- Aquí se llenará con el backend -->
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- Botón flotante -->
+  <div class="fab" id="fab">+</div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">Nuevo Cliente</div>
+      <input type="text" placeholder="Nombre del Cliente">
+      <input type="text" placeholder="Teléfono">
+      <div style="margin-top:10px; text-align:right;">
+        <button class="close-btn" id="closeModal">Cancelar</button>
+        <button class="save-btn">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Dropdown
+      const userInfo = document.getElementById("user-info");
+      const dropdown = document.getElementById("dropdown-menu");
+
+      if (userInfo && dropdown) {
+        userInfo.addEventListener("click", (e) => {
+          e.stopPropagation();
+          dropdown.classList.toggle("show");
+        });
+
+        document.addEventListener("click", () => {
+          dropdown.classList.remove("show");
+        });
+      }
+
+      // Modal
+      const fab = document.getElementById("fab");
+      const modal = document.getElementById("modal");
+      const closeModal = document.getElementById("closeModal");
+
+      fab.addEventListener("click", () => {
+        modal.style.display = "flex";
+      });
+
+      closeModal.addEventListener("click", () => {
+        modal.style.display = "none";
+      });
+
+      window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
