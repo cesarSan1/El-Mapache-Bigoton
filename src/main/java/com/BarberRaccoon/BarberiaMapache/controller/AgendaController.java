@@ -55,7 +55,11 @@ public class AgendaController {
         }
     }
 
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> ed4d0a1 (Commit de Cesar)
     @DeleteMapping("/{idAgenda}")
     public ResponseEntity<Void> delete(@PathVariable Long idAgenda) {
         if (agendaRepository.existsById(idAgenda)) {

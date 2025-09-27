@@ -50,6 +50,10 @@ public class ClienteController {
     }
 
 
+<<<<<<< HEAD
+=======
+    
+>>>>>>> ed4d0a1 (Commit de Cesar)
     @DeleteMapping("/{idCliente}")
     public ResponseEntity<Void> delete(@PathVariable Long idCliente) {
         if(clienteRepository.existsById(idCliente)){
