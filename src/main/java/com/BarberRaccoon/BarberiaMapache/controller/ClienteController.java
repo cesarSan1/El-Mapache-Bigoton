@@ -34,29 +34,34 @@ public class ClienteController {
     @PostMapping
     public ResponseEntity<Void> create(@RequestBody Cliente newCliente, UriComponentsBuilder uriBuilder) {
         Cliente savedCliente = clienteRepository.save(newCliente);
-        URI uri =  uriBuilder.path("/cliente/{idCliente}").buildAndExpand(savedCliente.getId()).toUri();
+        URI uri =  uriBuilder.path("/cliente/{idCliente}").buildAndExpand(savedCliente.getIdCliente()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
     @PutMapping("/{idCliente}")
-    public ResponseEntity<Void> update(@PathVariable Long idCliente, @RequestBody Cliente ClienteAct) {
-        Cliente updatedCliente = clienteRepository.findById(idCliente).get();
-        if(updatedCliente != null){
-            updatedCliente.setId(updatedCliente.getId());
+    public ResponseEntity<Cliente> update(@PathVariable Long idCliente, @RequestBody Cliente clienteAct) {
+        Optional<Cliente> clienteOpcional = clienteRepository.findById(idCliente);
+        if(clienteOpcional.isPresent()){
+            Cliente updatedCliente = clienteOpcional.get();
+            updatedCliente.setNombre(clienteAct.getNombre());
+            updatedCliente.setTelefono(clienteAct.getTelefono());
             clienteRepository.save(updatedCliente);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(updatedCliente);  // Devuelve 200 + JSON
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build(); // 404 si no existe
     }
+
 
 
     @DeleteMapping("/{idCliente}")
-    public ResponseEntity<Void> delete(@PathVariable Long idCliente) {
-        if(clienteRepository.existsById(idCliente)){
+    public ResponseEntity<Cliente> delete(@PathVariable Long idCliente) {
+        Optional<Cliente> clienteOpcional = clienteRepository.findById(idCliente);
+        if(clienteOpcional.isPresent()){
             clienteRepository.deleteById(idCliente);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(clienteOpcional.get()); // Devuelve el cliente eliminado
         }
         return ResponseEntity.notFound().build();
     }
+
 
 }
