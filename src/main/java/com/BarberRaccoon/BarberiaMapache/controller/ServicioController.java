@@ -1,6 +1,5 @@
 package com.BarberRaccoon.BarberiaMapache.controller;
 
-import com.BarberRaccoon.BarberiaMapache.model.Cliente;
 import com.BarberRaccoon.BarberiaMapache.model.Servicio;
 import com.BarberRaccoon.BarberiaMapache.repository.ServicioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:5500")
 @RestController
 @RequestMapping("/servicio")
 public class ServicioController {
@@ -27,36 +26,43 @@ public class ServicioController {
     @GetMapping("/{idServicio}")
     public ResponseEntity<Servicio> findById(@PathVariable Long idServicio) {
         Optional<Servicio> servicio = servicioRepository.findById(idServicio);
-        return servicio.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        if (servicio.isPresent()) {
+            return ResponseEntity.ok(servicio.get());
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody Servicio newServicio, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<Servicio> create(@RequestBody Servicio newServicio, UriComponentsBuilder uriBuilder) {
         Servicio savedServicio = servicioRepository.save(newServicio);
         URI uri = uriBuilder.path("/servicio/{idServicio}")
-                .buildAndExpand(savedServicio.getId())
+                .buildAndExpand(savedServicio.getIdServicio())
                 .toUri();
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.created(uri).body(savedServicio);
     }
 
     @PutMapping("/{idServicio}")
-    public ResponseEntity<Void> update(@PathVariable Long idServicio, @RequestBody Servicio ServicioAct) {
-        Servicio updatedServicio = servicioRepository.findById(idServicio).get();
-        if(updatedServicio != null){
-            updatedServicio.setId(updatedServicio.getId());
+    public ResponseEntity<Servicio> update(@PathVariable Long idServicio, @RequestBody Servicio ServicioAct) {
+        Optional<Servicio> servicio = servicioRepository.findById(idServicio);
+        if(servicio.isPresent()){
+            Servicio updatedServicio = servicio.get();
+            updatedServicio.setServicio(ServicioAct.getServicio());
+            updatedServicio.setDescripcion(ServicioAct.getDescripcion());
+            updatedServicio.setCosto(ServicioAct.getCosto());
             servicioRepository.save(updatedServicio);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(updatedServicio);
         }
         return ResponseEntity.notFound().build();
     }
 
 
     @DeleteMapping("/{idServicio}")
-    public ResponseEntity<Void> delete(@PathVariable Long idServicio) {
-        if (servicioRepository.existsById(idServicio)) {
+    public ResponseEntity<Servicio> delete(@PathVariable Long idServicio) {
+        Optional<Servicio> servicio = servicioRepository.findById(idServicio);
+        if (servicio.isPresent()) {
             servicioRepository.deleteById(idServicio);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(servicio.get());
         }
         return ResponseEntity.notFound().build();
     }
