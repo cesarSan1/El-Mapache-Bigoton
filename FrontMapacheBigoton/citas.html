@@ -5,29 +5,34 @@
   <title>Citas</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Dropdown */
-    .dropdown {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: 40px;
-      background: white;
-      list-style: none;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
       padding: 10px;
-      margin: 0;
-      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background: #f2f2f2;
+    }
+    .btn {
+      padding: 5px 10px;
+      border: none;
       border-radius: 5px;
-    }
-    .dropdown.show {
-      display: block;
-    }
-    .user-menu {
-      position: relative;
-      display: inline-block;
       cursor: pointer;
+      margin: 0 2px;
     }
-
-    /* Botón flotante */
+    .btn-edit {
+      background: #ffc107;
+      color: black;
+    }
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
     .fab {
       position: fixed;
       bottom: 20px;
@@ -49,11 +54,8 @@
     .fab:hover {
       background-color: #0056b3;
     }
-    
-
-    /* Modal */
     .modal {
-      display: none; /* oculto por defecto */
+      display: none;
       position: fixed;
       top: 0;
       left: 0;
@@ -76,38 +78,17 @@
       font-size: 20px;
       margin-bottom: 10px;
     }
-    .modal input {
+    .modal input, .modal select {
       width: 100%;
       margin: 8px 0;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-    .modal button {
-      margin-top: 10px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .modal select {
-    width: 100%;
-    margin: 8px 0;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    appearance: none; /* Quita la flecha predeterminada del navegador */
-    background: white url("data:image/svg+xml;utf8,<svg fill='%23999' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center;
-    background-size: 16px;
-    font-size: 14px;
-    cursor: pointer;
-    }
-
     .close-btn {
       background: red;
       color: white;
-      float: right;
+      margin-right: 5px;
     }
     .save-btn {
       background: #007bff;
@@ -116,7 +97,6 @@
   </style>
 </head>
 <body>
-  <!-- Barra lateral -->
   <aside class="sidebar">
     <nav>
       <ul>
@@ -128,8 +108,7 @@
       </ul>
     </nav>
   </aside>
-  
-  <!-- Contenido principal -->
+
   <div class="main-content">
     <div class="topbar">
       <h1>MAPACHE BIGOTÓN</h1>
@@ -145,7 +124,6 @@
       </div>
     </div>
 
-    <!-- Tabla -->
     <section class="table-section">
       <h2>Citas</h2>
       <table>
@@ -153,89 +131,155 @@
           <tr>
             <th>ID</th>
             <th>Cliente</th>
-            <th>Télefono</th>
+            <th>Teléfono</th>
             <th>Servicio</th>
             <th>Costo</th>
             <th>Fecha</th>
             <th>Hora</th>
+            <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="data-table">
-          <!-- Aquí se llenará con el backend -->
-        </tbody>
+        <tbody id="data-table"></tbody>
       </table>
     </section>
   </div>
 
-  <!-- Botón flotante -->
   <div class="fab" id="fab">+</div>
 
-  <!-- Modal -->
   <div class="modal" id="modal">
-  <div class="modal-content">
-    <div class="modal-header">Nueva Cita</div>
-  
-    <select id="cliente" name="cliente">
-      <option value="" disabled selected>Selecciona un cliente</option>
-      <option value="cliente1">Cliente 1</option>
-      <option value="cliente2">Cliente 2</option>
-      <option value="cliente3">Cliente 3</option>
-    </select>
-
-    <select id="servicio" name="servicio">
-      <option value="" disabled selected>Selecciona un servicio</option>
-      <option value="servicio1">Servicio 1</option>
-      <option value="servicio2">Servicio 2</option>
-      <option value="servicio3">Servicio 3</option>
-    </select>
-    
-    <input type="date" id="fecha">
-    <input type="time" id="hora">
-
-    <div style="margin-top:10px; text-align:right;">
-      <button class="close-btn" id="closeModal">Cancelar</button>
-      <button class="save-btn">Guardar</button>
+    <div class="modal-content">
+      <div class="modal-header">Nueva Cita</div>
+      <input type="hidden" id="cita-id">
+      <select id="cliente">
+        <option value="" disabled selected>Selecciona un cliente</option>
+      </select>
+      <select id="servicio">
+        <option value="" disabled selected>Selecciona un servicio</option>
+      </select>
+      <input type="date" id="fecha">
+      <input type="time" id="hora">
+      <div style="margin-top:10px; text-align:right;">
+        <button class="close-btn" id="closeModal">Cancelar</button>
+        <button class="save-btn" id="saveCita">Guardar</button>
+      </div>
     </div>
   </div>
-</div>
-
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Dropdown
-      const userInfo = document.getElementById("user-info");
-      const dropdown = document.getElementById("dropdown-menu");
+    const API_CITA = 'http://localhost:9090/cita';
+    const API_CLIENTE = 'http://localhost:9090/cliente';
+    const API_SERVICIO = 'http://localhost:9090/servicio';
 
-      if (userInfo && dropdown) {
-        userInfo.addEventListener("click", (e) => {
-          e.stopPropagation();
-          dropdown.classList.toggle("show");
-        });
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCitas();
 
-        document.addEventListener("click", () => {
-          dropdown.classList.remove("show");
-        });
-      }
-
-      // Modal
-      const fab = document.getElementById("fab");
-      const modal = document.getElementById("modal");
-      const closeModal = document.getElementById("closeModal");
-
-      fab.addEventListener("click", () => {
-        modal.style.display = "flex";
+      document.getElementById('fab').addEventListener('click', () => {
+        document.getElementById('modal').style.display = 'flex';
+        document.getElementById('cita-id').value = '';
+        document.getElementById('fecha').value = '';
+        document.getElementById('hora').value = '';
+        loadClientes();
+        loadServicios();
       });
 
-      closeModal.addEventListener("click", () => {
-        modal.style.display = "none";
+      document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('modal').style.display = 'none';
       });
 
-      window.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          modal.style.display = "none";
-        }
+      document.getElementById('saveCita').addEventListener('click', () => {
+        const id = document.getElementById('cita-id').value;
+        const clienteId = document.getElementById('cliente').value;
+        const servicioId = document.getElementById('servicio').value;
+        const fecha = document.getElementById('fecha').value;
+        const hora = document.getElementById('hora').value;
+
+        const cita = {
+          cliente: { idCliente: clienteId },
+          servicio: { idServicio: servicioId },
+          fecha,
+          hora
+        };
+
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_CITA}/${id}` : API_CITA;
+
+        fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(cita)
+        })
+        .then(() => {
+          document.getElementById('modal').style.display = 'none';
+          loadCitas();
+        });
       });
     });
+
+    function loadCitas() {
+      fetch(API_CITA)
+        .then(res => res.json())
+        .then(citas => {
+          const table = document.getElementById('data-table');
+          table.innerHTML = '';
+          citas.forEach(cita => {
+            table.innerHTML += `
+              <tr>
+                <td>${cita.idCita}</td>
+                <td>${cita.cliente.nombre}</td>
+                <td>${cita.cliente.telefono}</td>
+                <td>${cita.servicio.servicio}</td>
+                <td>$${cita.servicio.costo.toFixed(2)}</td>
+                <td>${cita.fecha}</td>
+                <td>${cita.hora}</td>
+                <td>
+                  <button class="btn btn-edit" onclick="editCita(${cita.idCita}, ${cita.cliente.idCliente}, ${cita.servicio.idServicio}, '${cita.fecha}', '${cita.hora}')">Editar</button>
+                  <button class="btn btn-delete" onclick="deleteCita(${cita.idCita})">Eliminar</button>
+                </td>
+              </tr>
+            `;
+          });
+        });
+    }
+
+    function editCita(id, clienteId, servicioId, fecha, hora) {
+      document.getElementById('modal').style.display = 'flex';
+      document.getElementById('cita-id').value = id;
+      document.getElementById('cliente').value = clienteId;
+      document.getElementById('servicio').value = servicioId;
+      document.getElementById('fecha').value = fecha;
+      document.getElementById('hora').value = hora;
+      loadClientes();
+      loadServicios();
+    }
+
+    function deleteCita(id) {
+      fetch(`${API_CITA}/${id}`, { method: 'DELETE' })
+        .then(() => loadCitas());
+    }
+
+    function loadClientes(){
+      fetch(API_CLIENTE)
+        .then(res => res.json())
+        .then(clientes => {
+          const select = document.getElementById('cliente');
+          select.innerHTML = '<option value="" disabled selected>Selecciona un cliente</option>';
+          clientes.forEach(c => {
+            select.innerHTML += `<option value="${c.idCliente}">${c.nombre}</option>`;
+          });
+        });
+    }
+
+    function loadServicios() {
+      fetch(API_SERVICIO)
+        .then(res => res.json())
+        .then(servicios => {
+          const select = document.getElementById('servicio');
+          select.innerHTML = '<option value="" disabled selected>Selecciona un servicio</option>';
+          servicios.forEach(s => {
+            select.innerHTML += `<option value="${s.idServicio}">${s.servicio}</option>`;
+          });
+        });
+    }
   </script>
 </body>
 </html>
