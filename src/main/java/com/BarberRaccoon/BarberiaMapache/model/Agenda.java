@@ -14,12 +14,13 @@ public class Agenda {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "idAgenda")
+    private Long idAgenda;
 
     private int anio;
     private int mes;
 
     @OneToOne
-    @JoinColumn(name = "id_cita", nullable = false)
+    @JoinColumn(name = "idCita", nullable = false)
     private Cita cita;
 }
