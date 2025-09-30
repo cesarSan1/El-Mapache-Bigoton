@@ -10,7 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:5500") 
 @RestController
 @RequestMapping("/cliente")
 public class ClienteController {
