@@ -10,7 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:5500")
 @RestController
 @RequestMapping("/agenda")
 public class AgendaController {
@@ -20,36 +20,38 @@ public class AgendaController {
 
     @GetMapping
     public ResponseEntity<Iterable<Agenda>> findAll() {
-        return ResponseEntity.ok(agendaRepository.findAll());
+        return ResponseEntity.ok(this.agendaRepository.findAll());
     }
 
     @GetMapping("/{idAgenda}")
     public ResponseEntity<Agenda> findById(@PathVariable Long idAgenda) {
         Optional<Agenda> agenda = agendaRepository.findById(idAgenda);
-        return agenda.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        if (agenda.isPresent()) {
+            return ResponseEntity.ok(agenda.get());
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody Agenda newAgenda, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<Agenda> create(@RequestBody Agenda newAgenda, UriComponentsBuilder uriBuilder) {
+        newAgenda.setCita(null);
         Agenda savedAgenda = agendaRepository.save(newAgenda);
         URI uri = uriBuilder.path("/agenda/{idAgenda}")
-                .buildAndExpand(savedAgenda.getId())
+                .buildAndExpand(savedAgenda.getIdAgenda())
                 .toUri();
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.created(uri).body(savedAgenda);
     }
 
     @PutMapping("/{idAgenda}")
-    public ResponseEntity<Void> update(@PathVariable Long idAgenda, @RequestBody Agenda agendaAct) {
+    public ResponseEntity<Agenda> update(@PathVariable Long idAgenda, @RequestBody Agenda agendaAct) {
         Optional<Agenda> optionalAgenda = agendaRepository.findById(idAgenda);
-
         if (optionalAgenda.isPresent()) {
             Agenda agenda = optionalAgenda.get();
             agenda.setAnio(agendaAct.getAnio());
             agenda.setMes(agendaAct.getMes());
-            agenda.setCita(agendaAct.getCita());
             agendaRepository.save(agenda);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(agenda);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -57,10 +59,11 @@ public class AgendaController {
 
 
     @DeleteMapping("/{idAgenda}")
-    public ResponseEntity<Void> delete(@PathVariable Long idAgenda) {
-        if (agendaRepository.existsById(idAgenda)) {
+    public ResponseEntity<Agenda> delete(@PathVariable Long idAgenda) {
+        Optional<Agenda> optionalAgenda = agendaRepository.findById(idAgenda);
+        if (optionalAgenda.isPresent()) {
             agendaRepository.deleteById(idAgenda);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(optionalAgenda.get());
         }
         return ResponseEntity.notFound().build();
     }
