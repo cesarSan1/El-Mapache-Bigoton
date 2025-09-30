@@ -5,29 +5,34 @@
   <title>Clientes</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Dropdown */
-    .dropdown {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: 40px;
-      background: white;
-      list-style: none;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
       padding: 10px;
-      margin: 0;
-      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background: #f2f2f2;
+    }
+    .btn {
+      padding: 5px 10px;
+      border: none;
       border-radius: 5px;
-    }
-    .dropdown.show {
-      display: block;
-    }
-    .user-menu {
-      position: relative;
-      display: inline-block;
       cursor: pointer;
+      margin: 0 2px;
     }
-
-    /* Botón flotante */
+    .btn-edit {
+      background: #ffc107;
+      color: black;
+    }
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
     .fab {
       position: fixed;
       bottom: 20px;
@@ -49,10 +54,8 @@
     .fab:hover {
       background-color: #0056b3;
     }
-
-    /* Modal */
     .modal {
-      display: none; /* oculto por defecto */
+      display: none;
       position: fixed;
       top: 0;
       left: 0;
@@ -82,17 +85,10 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-    .modal button {
-      margin-top: 10px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
     .close-btn {
       background: red;
       color: white;
-      float: right;
+      margin-right: 5px;
     }
     .save-btn {
       background: #007bff;
@@ -101,8 +97,6 @@
   </style>
 </head>
 <body>
-
-  <!-- Barra lateral -->
   <aside class="sidebar">
     <nav>
       <ul>
@@ -115,7 +109,6 @@
     </nav>
   </aside>
 
-  <!-- Contenido principal -->
   <div class="main-content">
     <div class="topbar">
       <h1>MAPACHE BIGOTÓN</h1>
@@ -131,7 +124,6 @@
       </div>
     </div>
 
-    <!-- Tabla -->
     <section class="table-section" id="table-clientes">
       <h2>Clientes</h2>
       <table>
@@ -139,68 +131,107 @@
           <tr>
             <th>ID</th>
             <th>Cliente</th>
-            <th>Télefono</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="data-table">
-          <!-- Aquí se llenará con el backend -->
-        </tbody>
+        <tbody id="data-table"></tbody>
       </table>
     </section>
   </div>
 
-  <!-- Botón flotante -->
   <div class="fab" id="fab">+</div>
 
-  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-content">
-      <div class="modal-header">Nuevo Cliente</div>
-      <input type="text" placeholder="Nombre del Cliente">
-      <input type="text" placeholder="Teléfono">
+      <div class="modal-header" id="modal-title">Nuevo Cliente</div>
+      <input type="hidden" id="cliente-id">
+      <input type="text" id="cliente-nombre" placeholder="Nombre del Cliente">
+      <input type="text" id="cliente-telefono" placeholder="Teléfono">
       <div style="margin-top:10px; text-align:right;">
         <button class="close-btn" id="closeModal">Cancelar</button>
-        <button class="save-btn">Guardar</button>
+        <button class="save-btn" id="saveCliente">Guardar</button>
       </div>
     </div>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Dropdown
-      const userInfo = document.getElementById("user-info");
-      const dropdown = document.getElementById("dropdown-menu");
+const API_URL = 'http://localhost:9090/cliente';
 
-      if (userInfo && dropdown) {
-        userInfo.addEventListener("click", (e) => {
-          e.stopPropagation();
-          dropdown.classList.toggle("show");
-        });
+// Cargar clientes al iniciar
+document.addEventListener('DOMContentLoaded', loadClientes);
 
-        document.addEventListener("click", () => {
-          dropdown.classList.remove("show");
-        });
-      }
-
-      // Modal
-      const fab = document.getElementById("fab");
-      const modal = document.getElementById("modal");
-      const closeModal = document.getElementById("closeModal");
-
-      fab.addEventListener("click", () => {
-        modal.style.display = "flex";
-      });
-
-      closeModal.addEventListener("click", () => {
-        modal.style.display = "none";
-      });
-
-      window.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          modal.style.display = "none";
-        }
+function loadClientes() {
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(clientes => {
+      const table = document.getElementById('data-table');
+      table.innerHTML = '';
+      clientes.forEach(cliente => {
+        table.innerHTML += `
+          <tr>
+            <td>${cliente.idCliente}</td>
+            <td>${cliente.nombre}</td>
+            <td>${cliente.telefono}</td>
+            <td>
+              <button class="btn btn-edit" onclick="editCliente(${cliente.idCliente}, '${cliente.nombre}', '${cliente.telefono}')">Editar</button>
+              <button class="btn btn-delete" onclick="deleteCliente(${cliente.idCliente})">Eliminar</button>
+            </td>
+          </tr>
+        `;
       });
     });
-  </script>
+}
+
+// Abrir modal
+document.getElementById('fab').addEventListener('click', () => {
+  document.getElementById('modal').style.display = 'flex';
+  document.getElementById('cliente-id').value = '';
+  document.getElementById('cliente-nombre').value = '';
+  document.getElementById('cliente-telefono').value = '';
+});
+
+// Cerrar modal
+document.getElementById('closeModal').addEventListener('click', () => {
+  document.getElementById('modal').style.display = 'none';
+});
+
+// Guardar cliente
+document.getElementById('saveCliente').addEventListener('click', () => {
+  const id = document.getElementById('cliente-id').value;
+  const nombre = document.getElementById('cliente-nombre').value;
+  const telefono = document.getElementById('cliente-telefono').value;
+
+  const cliente = { nombre, telefono };
+
+  const method = id ? 'PUT' : 'POST';
+  const url = id ? `${API_URL}/${id}` : API_URL;
+
+  fetch(url, {
+    method: method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cliente)
+  })
+  .then(() => {
+    document.getElementById('modal').style.display = 'none';
+    loadClientes();
+  });
+});
+
+// Editar cliente
+function editCliente(id, nombre, telefono) {
+  document.getElementById('modal').style.display = 'flex';
+  document.getElementById('cliente-id').value = id;
+  document.getElementById('cliente-nombre').value = nombre;
+  document.getElementById('cliente-telefono').value = telefono;
+}
+
+// Eliminar cliente
+function deleteCliente(id) {
+  fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+    .then(() => loadClientes());
+}
+</script>
+
 </body>
 </html>
